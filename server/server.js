@@ -4,6 +4,8 @@ import 'dotenv/config'
 import bcrypt from 'bcrypt'
 import {nanoid} from 'nanoid';
 import jwt from 'jsonwebtoken'
+import cors from 'cors';
+
 
 //Schema import
 import User from "./Schema/User.js";
@@ -17,6 +19,7 @@ let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for e
 let passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/; // regex for password
 
 server.use(express.json())
+server.use(cors());
 
 mongoose.connect(process.env.DB_LOCATION,{ autoIndex:true})
 
@@ -93,7 +96,7 @@ server.post("/signin", (req,res)=>{
                 return res.status(200).json(formatDatatoSend(user))
             }
         })
-        return res.json({"status":"got user document"})
+        
     })
     .catch(err=>{
         console.log(err.message);
