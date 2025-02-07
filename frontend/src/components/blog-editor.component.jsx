@@ -3,16 +3,29 @@ import logo from "../imgs/logo.png"
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png"
 import { uploadImage } from "../common/aws";
-import { useContext, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { EditorContext } from "../pages/editor.pages";
+import EditorJs from "@editorjs/editorjs"
+import {tools} from "./tools.component"
+
+
 const BlogEditor = () => {
 
-    
+   
 
-    let blogBannerRef = useRef();
+    let {blog, blog : {title, banner, content, tags, des}, setBlog, textEditor, setTextEditor, setEditorState} = useContext(EditorContext)
 
-    let {blog, blog : {title, banner, content, tags, des}, setBlog} = useContext(EditorContext)
+    useEffect(()=>{
+        setTextEditor(new EditorJs({
+            holderId: "textEditor",
+            data : '',
+            tools: tools,
+            placeholder: "Let write an interesting story"
+
+
+        }))
+    }, [])
 
     const handleBannerUpload = (e)=>{
        //console.log(e)
@@ -38,12 +51,12 @@ const BlogEditor = () => {
 
     const handleTitleKeyDown=(e)=>{
         // console.log(e);
-        if(e.keyCode===13){//enter key
+        if(e.keyCode==13){//enter key
             e.preventDefault();
         }
     }
     const handleTitleChange=(e)=>{
-        console.log(e);
+        //console.log(e);
         let input = e.target;
         input.style.height='auto';
         input.style.height=input.scrollHeight+'px';
@@ -54,6 +67,31 @@ const BlogEditor = () => {
     const handleError=(e)=>{
         let img =e.target;
         img.src=defaultBanner;
+    }
+
+    const handlePublishEvent=()=>{
+        if(!banner.length){
+            return toast.error("Upload a blog banner to publish it")
+        }
+        if(!title.length){
+            return toast.error("Enter a title to publish it")
+        }
+        if(textEditor.isReady){
+            textEditor.save().then(data=>{
+                console.log(data)
+                if(data.blocks.length){
+                    setBlog({...blog, content: data})
+                    setEditorState("publish")
+                }
+                else {
+                    return toast.error("Write something")
+                }
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+
+        }
     }
     return (
         <>
@@ -67,7 +105,8 @@ const BlogEditor = () => {
 
                 </p>
                 <div className="flex gap-4 ml-auto">
-                    <button className="btn-dark py-2">
+                    <button className="btn-dark py-2"
+                    onClick={handlePublishEvent}>
                         Publish
                     </button>
                     <button className="btn-light py-2">
@@ -104,7 +143,9 @@ const BlogEditor = () => {
 
                         </textarea>
 
-                        <hr className="w-full opacity-10 my-5 "/>
+                        <hr className="w-full opacity-10 my-5"/>
+
+                        <div id="textEditor" className="font-gelasio"></div>
 
 
                     </div>

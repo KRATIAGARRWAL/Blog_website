@@ -36,7 +36,7 @@ mongoose.connect(process.env.DB_LOCATION,{ autoIndex:true})
 //setting s3 bucket
 const s3 = new aws.S3({
     
-    region : 'eu-north-1',
+    region : 'ap-south-1',
     accessKeyId: process.env.AWS_ACCESS_KEY,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 })
@@ -48,7 +48,7 @@ const generateUploadUrl =async ()=> {
     return await s3.getSignedUrlPromise('putObject', {
         Bucket : 'blog-website-krati',
         Key :  imageName,
-        Expires : 5000,
+        Expires : 10000,
         ContentType : "image/jpeg"
 
     })
@@ -76,7 +76,7 @@ const generateUsername=async(email)=>{
 server.get('/get-upload-url', (req,res)=>{
     //nsole.log("djnnfd");
     generateUploadUrl().then(url =>
-        res.status(200).json({uploadUrl : url})
+        res.status(200).json({uploadURL : url})
     ).catch(err => {
         console.log(err.message);
         return res.status(500).json({error : err.message})
