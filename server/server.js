@@ -220,17 +220,19 @@ server.post('/create-blog',verifyJWT, (req,res)=>{
     if(!title.length){
         return res.status(403).json({error : "no title"})
     }
-    if(!des.length || des.length>200){
-        return res.status(403).json({error : "no description or description is too long"})
-    }
-    if(!banner.length){
-        return res.status(403).json({error : "no banner"})
-    }
-    if(!content.blocks.length){
-        return res.status(403).json({error : "no content"})
-    }
-    if(!tags.length || tags.length>10){
-        return res.status(403).json({error : "no tags or more than 10"})
+    if(!draft){
+        if(!des.length || des.length>200){
+            return res.status(403).json({error : "no description or description is too long"})
+        }
+        if(!banner.length){
+            return res.status(403).json({error : "no banner"})
+        }
+        if(!content.blocks.length){
+            return res.status(403).json({error : "no content"})
+        }
+        if(!tags.length || tags.length>10){
+            return res.status(403).json({error : "no tags or more than 10"})
+        }
     }
 
     tags= tags.map(tag => tag.toLowerCase());
