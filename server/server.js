@@ -13,6 +13,7 @@ import aws from "aws-sdk"
 
 //Schema import
 import User from "./Schema/User.js";
+import Blog from "./Schema/Blog.js";
 
 
 const server=express()
@@ -53,6 +54,23 @@ const generateUploadUrl =async ()=> {
 
     })
 }
+
+
+const verifyJWT=(req, res, next)=>{
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if(token==null){
+        return res.status(401).json({error:"no token"})
+    }
+    jwt.verify(token, process.env.SECRET_ACCESS_KEY, (err, user)=>{
+        if(err){
+            return res.status(403).json({error:"invalid token"})
+        }
+        req.user = user.id;
+        next();
+    })
+}
+
 
 const formatDatatoSend=(user)=>{
     const access_token=jwt.sign({id:user._id}, process.env.SECRET_ACCESS_KEY)
@@ -193,6 +211,56 @@ server.post("/google-auth", async(req,res)=>{
     })
 
 })
+
+
+server.post('/create-blog',verifyJWT, (req,res)=>{
+
+    let authorId = req.user;
+    let {title, des, banner, tags, content, draft}=req.body;
+    if(!title.length){
+        return res.status(403).json({error : "no title"})
+    }
+    if(!des.length || des.length>200){
+        return res.status(403).json({error : "no description or description is too long"})
+    }
+    if(!banner.length){
+        return res.status(403).json({error : "no banner"})
+    }
+    if(!content.blocks.length){
+        return res.status(403).json({error : "no content"})
+    }
+    if(!tags.length || tags.length>10){
+        return res.status(403).json({error : "no tags or more than 10"})
+    }
+
+    tags= tags.map(tag => tag.toLowerCase());
+
+    let blog_id=title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, "-").trim()+nanoid()
+    //console.log(blog_id);
+    
+
+    let blog = new Blog ({
+        title, des, banner , content, tags, author : authorId, blog_id ,draft : Boolean(draft)
+    })
+
+    blog.save().then(blog =>{
+        let incrementVal = draft ? 0: 1;
+        User.findOneAndUpdate({ _id: authorId}, { $inc : {"account_info.total_posts" : incrementVal}, $push : {"blogs" : blog._id} })
+        .then(user=>{
+            return res.status(200).json({id: blog.blog_id})
+        })
+        .catch(err=>{
+            return res.status(500).json({"error": "Failed to create blog"+err.message})
+        })
+    })
+    .catch(err=>{
+        return res.status(500).json({"error": err.message})
+    })
+
+    //return res.json({status: "done"})
+})
+
+
 
 server.listen(PORT,()=>{
     console.log(`server is running on port ${PORT}`)
