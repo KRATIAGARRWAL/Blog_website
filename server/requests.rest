@@ -1,0 +1,66 @@
+# POST http://localhost:3000/signin 
+# Content-Type: application/json
+
+# {
+#     "email": "kunaa@gmail.com",
+#     "password": "Kunaal123"
+# }
+
+# POST http://localhost:3000/signup
+# Content-Type: application/json
+
+# {
+#     "fullname" : "fkfk",
+#     "email":"krfkid@yoo.com",
+#     "password" :"Kfr5545fff"
+# }
+
+//GET http://localhost:3000/get-upload-url
+
+# POST  http://localhost:3000/create-blog
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTliN2JhZmU0NDAwMjMzNTY5OTE1OCIsImlhdCI6MTczOTE3NTg2Nn0.Dj-cSnqbEc-P2zMBVDCfc9TW4VbW4MGyo8TIz7JMg0s
+
+# {
+#     "title" : "this is a test blog",
+#     "banner" : "https://example.com/image-url",
+#     "des" : "this is a short des",
+#     "content" : {
+#         "blocks" : [1,2]
+#     },
+#     "tags" : ["tag1","tag2"]
+
+
+# }
+
+# GET http://localhost:3000/latest-blogs
+# GET http://localhost:3000/trending-blogs
+
+# POST http://localhost:3000/search-blogs
+# Content-Type: application/json
+
+# {
+#     "tag" : "confidence"
+# }
+
+# POST http://localhost:3000/search-users
+# Content-Type: application/json
+
+# {
+#     "query" : "kra"
+# }
+
+# POST http://localhost:3000/get-profile
+# Content-Type: application/json
+
+# {
+#     "username" : "whyneedmail"
+# }
+
+
+# POST http://localhost:3000/get-blog
+# Content-Type: application/json
+
+# {
+#     "blog_id":"-Tips-for-Effective-Time-ManagementIgFYObfbpk_9WrX-ySShD"
+# }
