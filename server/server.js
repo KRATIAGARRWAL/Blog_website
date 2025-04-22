@@ -14,6 +14,7 @@ import aws from "aws-sdk"
 //Schema import
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js";
+import Notification from "./Schema/Notification.js"
 
 
 const server=express()
@@ -67,6 +68,7 @@ const verifyJWT=(req, res, next)=>{
             return res.status(403).json({error:"invalid token"})
         }
         req.user = user.id;
+        // req.user = { user_id: user.id };
         next();
     })
 }
@@ -438,6 +440,37 @@ server.post("/get-blog", (req,res)=>{
     })
 })
 
+server.post("/like-blog", verifyJWT, (req,res)=>{
+    let user_id = req.user;
+    let {_id, isLikedByUser}= req.body;
+    let incrementVal= isLikedByUser? -1:1;
+    console.log(`hi checking ${user_id}`)
+
+    Blog.findOneAndUpdate({_id}, {$inc : {"activity.total_likes" : incrementVal}})
+    .then(blog=>{
+        if(!isLikedByUser){
+            let like = new Notification({
+                type: "like",
+                blog: _id,
+                notification_for : blog.author,
+                user : user_id
+            })
+
+            like.save().then(notification=>{
+                return res.status(200).json({liked_by_user: true})
+            })
+            .catch(err=>{
+                return res.status(500).json({"error": "Failed to create notification"+err.message})
+            })
+        }
+    })
+})
+
+server.post("/isliked-by-user", verifyJWT, (req,res)=>{
+    let user_id = req.user;
+    let {blog_id} = req.body;
+    
+})
 
 server.listen(PORT,()=>{
     console.log(`server is running on port ${PORT}`)
