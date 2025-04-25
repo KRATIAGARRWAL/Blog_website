@@ -13,7 +13,17 @@ const BlogInteraction=()=>{
 
     useEffect(()=>{
         if(access_token){
-            
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN+"/isliked-by-user", { _id },{
+                headers:{
+                    'Authorization': `Bearer ${access_token}`
+                }
+            })
+            .then(({data : {result}})=>{
+                setLikedByUser(Boolean(result))
+            })
+            .catch(err=>{
+                console.log(err);
+            })
         }
     },[])
 
