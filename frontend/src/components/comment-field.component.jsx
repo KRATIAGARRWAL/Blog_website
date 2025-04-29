@@ -30,6 +30,7 @@ const CommentField=({action})=>{
         })
         .then(({data})=>{
             setComment("");
+            console.log(comment+" heloooooo")
             data.commented_by={ personal_info:{username, profile_img, fullname} }
 
             let newCommentArr;
@@ -42,7 +43,7 @@ const CommentField=({action})=>{
             setBlog({...blog, comments : {...comments, results:newCommentArr}, activity: {...activity, total_comments: total_comments+1, total_parent_comments: total_parent_comments+parentCommentIncrementval }})
 
             setTotalParentCommentsLoaded(preVal=> preVal+parentCommentIncrementval)
-            
+
 
         }).catch(err=>{
             console.log(err);
@@ -52,7 +53,7 @@ const CommentField=({action})=>{
     return (
         <>
             <Toaster/>
-            <textarea val={comment}
+            <textarea value={comment}
             onChange={(e)=>setComment(e.target.value)}
              placeholder="Leave a comment..." 
             className="input-box pl-5 placeholder:text-dark-grey resize-none h-[150px] overflow-auto"></textarea>
