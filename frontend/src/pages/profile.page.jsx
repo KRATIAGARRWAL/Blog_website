@@ -50,6 +50,9 @@ const ProfilePage = () => {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-profile", { username: profileId })
             .then(({ data: user }) => {
                 if(user!=null){
+                    if (!user.personal_info.profile_img) {
+                        user.personal_info.profile_img = `https://api.dicebear.com/6.x/fun-emoji/svg?seed=Kiki`;
+                    }
                     setProfile(user);
                 }
                 
